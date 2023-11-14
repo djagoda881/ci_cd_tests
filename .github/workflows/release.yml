@@ -19,4 +19,5 @@ jobs:
             - name: Upload Release
               uses: ncipollo/release-action@v1
               with:
+                generateReleaseNotes: true
                 token: ${{ secrets.TOKEN }}

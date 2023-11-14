@@ -16,10 +16,6 @@ jobs:
         runs-on: ubuntu-latest    
         steps:
             - uses: actions/checkout@v4
-
-            - name: test
-              run: git checkout main2
-
             - name: Upload Release
               uses: ncipollo/release-action@v1
               with:

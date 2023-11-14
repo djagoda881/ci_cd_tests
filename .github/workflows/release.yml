@@ -15,10 +15,62 @@ jobs:
     release:
         runs-on: ubuntu-latest    
         steps:
-            - uses: actions/checkout@v4
-            - name: Upload Release
-              uses: ncipollo/release-action@v1
-              with:
-                generateReleaseNotes: true
-                tag: "${{ github.event.inputs.tag }}"
-                token: ${{ secrets.TOKEN }}
+          - uses: actions/checkout@v4
+            with:
+              fetch-depth: 0
+            
+          - uses: fregante/setup-git-user@v2
+    
+          - name: Setting up Python 3.10
+            uses: actions/setup-python@v4
+            with:
+              python-version: "3.10"
+    
+          - name: Setting up the environment
+            run: pip install tomlkit
+          
+          - name: Setting a branch
+            run: git checkout main && git checkout -b post_release_branch
+    
+          - name: Get latest tag
+            id: var
+            run: |
+              if [ "${{ github.event_name }}" == "push" ]; then
+                latest_tag=$(git describe --tags --abbrev=0)
+              elif [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+                latest_tag="${{ github.event.inputs.tag }}"
+              fi
+              echo "latest_tag=$latest_tag" >> $GITHUB_OUTPUT
+              echo $latest_tag
+            shell: bash
+            
+          - name: Updating version in pyproject.toml
+            run: |
+              python .github/scripts/update_pyproject_version.py --tag ${{ steps.var.outputs.latest_tag }}
+          - name: Commit changes
+            run: |
+              git add pyproject.toml
+              git commit -m"🚀 Updated files after release" || echo "No changes to commit"
+          - name: create PR changes
+            run: |
+              DIFF=$(git log main..post_release_branch)
+              if [ -n "$DIFF" ]; then
+                git push --set-upstream origin post_release_branch --force
+                gh pr create -B main -H post_release_branch --title "🚀 Updated files after release" --body "Created by Github action"
+              else
+                echo "No changes to commit between post_release_branch and main"
+              fi
+            env:
+              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
+          - name: merge PR
+            run: |
+              gh pr merge --admin --squash -t "🚀 Updated files after release"
+            env:
+              GITHUB_TOKEN: ${{ secrets.TOKEN }}
+          - name: Upload Release
+            uses: ncipollo/release-action@v1
+            with:
+              generateReleaseNotes: true
+              tag: ${{ steps.var.outputs.latest_tag }}
+              token: ${{ secrets.TOKEN }}

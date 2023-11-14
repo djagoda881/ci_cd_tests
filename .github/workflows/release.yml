@@ -51,13 +51,9 @@ jobs:
             run: |
               git add pyproject.toml
               git commit -m"🚀 Updated files after release" || { echo "Nothing to commit. Exiting." && exit 0; }
-              DIFF=$(git log main..post_release_branch)
-              if [ -n "$DIFF" ]; then
-                git push --set-upstream origin post_release_branch --force
-                gh pr create -B main -H post_release_branch --title "🚀 Updated files after release" --body "Created by Github action"
-              else
-                echo "No changes to commit between post_release_branch and main"
-              fi
+              
+              git push --set-upstream origin post_release_branch --force
+              gh pr create -B main -H post_release_branch --title "🚀 Updated files after release" --body "Created by Github action"
             env:
               GITHUB_TOKEN: ${{ secrets.TOKEN }}
     

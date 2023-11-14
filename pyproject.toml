@@ -1,0 +1,5 @@
+[project]
+name = "adsa"
+description = "A CLI tool for man"
+readme = "README.md"
+version = "0.0.1"

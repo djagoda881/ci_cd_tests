@@ -50,9 +50,7 @@ jobs:
           - name: Commit changes
             run: |
               git add pyproject.toml
-              git commit -m"🚀 Updated files after release" || echo "No changes to commit"
-          - name: create PR changes
-            run: |
+              git commit -m"🚀 Updated files after release" || { echo "Nothing to commit. Exiting." && exit 0; }
               DIFF=$(git log main..post_release_branch)
               if [ -n "$DIFF" ]; then
                 git push --set-upstream origin post_release_branch --force

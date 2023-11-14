@@ -1,0 +1,19 @@
+
+name: "Release"
+
+on:
+  push:
+    tags:
+      - "v*.*.*" # Match tags that start with 'v'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Tag for automatic release
+        required: true
+
+jobs:
+    release:
+        runs-on: ubuntu-latest    
+        steps:
+            - uses: actions/checkout@v4
+            - uses: ncipollo/release-action@v1

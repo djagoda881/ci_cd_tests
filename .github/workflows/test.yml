@@ -1,0 +1,21 @@
+name: Clone Repository
+
+on:
+  push:
+    branches:
+      - main  # Change this to match the branch you want to trigger on
+
+jobs:
+  clone_repo:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Clone test
+        run: |
+          git clone https://$DBT_ENV_SECRET_GITHUB_TOKEN@github.com/dyvenia/nesso-cli.git
+        shell: bash
+        env:
+          DBT_ENV_SECRET_GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"

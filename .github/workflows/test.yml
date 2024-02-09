@@ -18,4 +18,4 @@ jobs:
           git clone https://$DBT_ENV_SECRET_GITHUB_TOKEN@github.com/dyvenia/nesso-cli.git
         shell: bash
         env:
-          DBT_ENV_SECRET_GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          DBT_ENV_SECRET_GITHUB_TOKEN: "${{ secrets.TOKEN }}"
